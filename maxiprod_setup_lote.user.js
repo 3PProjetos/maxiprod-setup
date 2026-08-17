@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Maxiprod - ICMS e Setup automÃ¡tico em lote (API)
+// @name         Maxiprod - ICMS e Setup automático em lote (API)
 // @namespace    http://tampermonkey.net/
 // @version      4.4
 // @description  Consulta o Setup pela API GraphQL e aplica/salva automaticamente os itens selecionados
@@ -24,7 +24,7 @@
   const BTN_INDIVIDUAL_ID = 'tm-acrescimo-icms';
   const BTN_LOTE_ID = 'tm-acrescimo-icms-lote';
   const BTN_TESTE_BG_ID = 'tm-acrescimo-icms-bg-teste';
-  // A API do Maxiprod usa o mesmo DbContext em chamadas simultÃ¢neas.
+  // A API do Maxiprod usa o mesmo DbContext em chamadas simultâneas.
   // Manter em 1 evita o erro "A second operation was started...".
   const MAX_CONSULTAS_SIMULTANEAS = 1;
   const SETUPS = [
@@ -33,8 +33,8 @@
     { nome: 'ICMS 17%', valor: 156.03 }
   ];
 
-  // No modelo interno do Maxiprod estes campos nÃ£o sÃ£o booleanos comuns:
-  // o POST da prÃ³pria tela envia "S" ou "N" (um Ãºnico caractere).
+  // No modelo interno do Maxiprod estes campos não são booleanos comuns:
+  // o POST da própria tela envia "S" ou "N" (um único caractere).
   const CAMPOS_SIM_NAO = new Set([
     'AdicionarPedidoClienteNasInformacoesAdicionais',
     'AlterarQuantidadeUnidadeEstoqueManualmente',
@@ -57,9 +57,9 @@
     'VaiLivrosFiscaiServico'
   ]);
 
-  // Campos de enumeraÃ§Ã£o que o servidor aceita somente como cÃ³digo de uma letra.
-  // O valor do prÃ³prio formulÃ¡rio sempre tem prioridade; o padrÃ£o sÃ³ Ã© usado
-  // quando o HTML recebido nÃ£o informa o cÃ³digo interno do componente visual.
+  // Campos de enumeração que o servidor aceita somente como código de uma letra.
+  // O valor do próprio formulário sempre tem prioridade; o padrão só é usado
+  // quando o HTML recebido não informa o código interno do componente visual.
   const CAMPOS_CODIGO_UM_CARACTERE = new Set([
     'CFOPEntradaSaida',
     'EntradaSaida',
@@ -152,7 +152,7 @@
     const token = prompt(
       `${motivo ? `${motivo}\n\n` : ''}` +
       'Cole o token da API GraphQL do Maxiprod.\n\n' +
-      'Ele serÃ¡ guardado somente no Tampermonkey deste navegador.',
+      'Ele será guardado somente no Tampermonkey deste navegador.',
       ''
     );
     if (token === null) return null;
@@ -189,7 +189,7 @@
           try {
             corpo = JSON.parse(resposta.responseText || '{}');
           } catch (_) {
-            reject(new Error(`A API retornou uma resposta invÃ¡lida (${resposta.status}).`));
+            reject(new Error(`A API retornou uma resposta inválida (${resposta.status}).`));
             return;
           }
 
@@ -207,8 +207,8 @@
           }
           resolve(corpo.data || {});
         },
-        ontimeout: () => reject(new Error('A consulta Ã  API excedeu 30 segundos.')),
-        onerror: () => reject(new Error('NÃ£o foi possÃ­vel conectar Ã  API GraphQL.'))
+        ontimeout: () => reject(new Error('A consulta à API excedeu 30 segundos.')),
+        onerror: () => reject(new Error('Não foi possível conectar à API GraphQL.'))
       });
     });
   }
@@ -281,7 +281,7 @@
     ));
 
     let token = obterToken();
-    if (!token) throw new Error('Token da API nÃ£o informado.');
+    if (!token) throw new Error('Token da API não informado.');
 
     try {
       return await consultarSetupsComToken(codigos, token);
@@ -289,8 +289,8 @@
       if (!erro.autenticacao) throw erro;
 
       GM_deleteValue(TOKEN_KEY);
-      token = solicitarToken('O token foi recusado, expirou ou nÃ£o tem permissÃ£o.');
-      if (!token) throw new Error('Token da API nÃ£o informado.');
+      token = solicitarToken('O token foi recusado, expirou ou não tem permissão.');
+      if (!token) throw new Error('Token da API não informado.');
       return consultarSetupsComToken(codigos, token);
     }
   }
@@ -414,7 +414,7 @@
     if (entrada === null) return null;
     const indice = Number(String(entrada).trim()) - 1;
     if (!Number.isInteger(indice) || indice < 0 || indice >= SETUPS.length) {
-      alert('OpÃ§Ã£o invÃ¡lida. Digite 1, 2 ou 3.');
+      alert('Opção inválida. Digite 1, 2 ou 3.');
       return null;
     }
     return SETUPS[indice];
@@ -427,17 +427,17 @@
     const acrescimoInput = getInput('AcrescimoDescontoInterno__');
 
     if (!quantidadeInput || !valorTotalInput || !valorUnitarioInput || !acrescimoInput) {
-      return { ok: false, erro: 'NÃ£o encontrei os campos da janela do item.' };
+      return { ok: false, erro: 'Não encontrei os campos da janela do item.' };
     }
     if (!Number.isFinite(percentualDoSetup)) {
-      return { ok: false, erro: 'Percentual do Setup invÃ¡lido.' };
+      return { ok: false, erro: 'Percentual do Setup inválido.' };
     }
 
     marcarCheckboxSeNecessario(getCheckbox('PossuiAcrescimoDescontoInterno__'));
     await wait(100);
     const tipoSelect = getSelect('TipoAlteracaoValorUnitario__');
     if (tipoSelect && !selecionarAcrescimoPercentualSeNecessario(tipoSelect)) {
-      return { ok: false, erro: 'NÃ£o encontrei AcrÃ©scimo (%) no campo de seleÃ§Ã£o.' };
+      return { ok: false, erro: 'Não encontrei Acréscimo (%) no campo de seleção.' };
     }
     await wait(100);
     await zerarCampoERecalcular(acrescimoInput);
@@ -448,26 +448,26 @@
     const valorUnitario = parseBr(getFormattedTextFromInput(valorUnitarioInput));
 
     if (!Number.isFinite(quantidade) || quantidade <= 0) {
-      return { ok: false, erro: 'Quantidade invÃ¡lida.' };
+      return { ok: false, erro: 'Quantidade inválida.' };
     }
-    if (!Number.isFinite(valorTotal)) return { ok: false, erro: 'Valor total invÃ¡lido.' };
+    if (!Number.isFinite(valorTotal)) return { ok: false, erro: 'Valor total inválido.' };
     if (!Number.isFinite(valorUnitario) || valorUnitario <= 0) {
-      return { ok: false, erro: 'Valor unitÃ¡rio invÃ¡lido.' };
+      return { ok: false, erro: 'Valor unitário inválido.' };
     }
 
     const calculado = calcularPercentual(
       quantidade, valorTotal, valorUnitario, setup.valor, percentualDoSetup
     );
     if (!Number.isFinite(calculado)) {
-      return { ok: false, erro: 'O percentual calculado Ã© invÃ¡lido.' };
+      return { ok: false, erro: 'O percentual calculado é inválido.' };
     }
 
     const formatado = formatBr(calculado, 4);
     if (!setInputValue(acrescimoInput, formatado)) {
-      return { ok: false, erro: 'NÃ£o consegui preencher o campo de acrÃ©scimo.' };
+      return { ok: false, erro: 'Não consegui preencher o campo de acréscimo.' };
     }
     await wait(250);
-    console.log('[TM Setup] CÃ¡lculo concluÃ­do:', {
+    console.log('[TM Setup] Cálculo concluído:', {
       setup: setup.nome, percentualDoSetup, quantidade, valorTotal,
       valorUnitario, percentualCalculado: calculado
     });
@@ -543,7 +543,7 @@
         return true;
       }
     } catch (erro) {
-      console.warn('[TM Setup BG] NÃ£o foi possÃ­vel atualizar a grade:', erro);
+      console.warn('[TM Setup BG] Não foi possível atualizar a grade:', erro);
     }
 
     return false;
@@ -584,7 +584,7 @@
 
   function obterItensSelecionados() {
     const grade = encontrarGradeProdutos();
-    if (!grade) return { itens: [], erro: 'NÃ£o encontrei a grade Produtos/serviÃ§os.' };
+    if (!grade) return { itens: [], erro: 'Não encontrei a grade Produtos/serviços.' };
     const mapa = obterMapaColunas(grade);
     const itens = obterLinhasDaGrade(grade).map(linha => lerItemDaLinha(linha, mapa))
       .filter(item => item?.checkbox?.checked)
@@ -809,11 +809,11 @@
 
   function obterUrlEdicaoDoItem(item) {
     const linha = localizarLinhaDoItem(item);
-    if (!linha) throw new Error(`NÃ£o encontrei a linha ${item.numero || item.codigo}.`);
+    if (!linha) throw new Error(`Não encontrei a linha ${item.numero || item.codigo}.`);
 
     const url = extrairUrlEdicaoDaLinha(linha);
     if (!url) {
-      throw new Error(`NÃ£o consegui identificar a URL de ediÃ§Ã£o do item ${item.codigo}.`);
+      throw new Error(`Não consegui identificar a URL de edição do item ${item.codigo}.`);
     }
 
     return url;
@@ -879,7 +879,7 @@
         } else {
           const numero = parseBr(textoNumero);
           if (!Number.isFinite(numero)) {
-            throw new Error(`Valor numÃ©rico invÃ¡lido no campo ${nome}: ${textoNumero}.`);
+            throw new Error(`Valor numérico inválido no campo ${nome}: ${textoNumero}.`);
           }
           payload[nome] = numero;
         }
@@ -912,8 +912,8 @@
       }
     }
 
-    // Este campo tem regra prÃ³pria no servidor: aceita exclusivamente Q ou V.
-    // Alguns componentes do formulÃ¡rio devolvem o rÃ³tulo visÃ­vel em vez do cÃ³digo.
+    // Este campo tem regra própria no servidor: aceita exclusivamente Q ou V.
+    // Alguns componentes do formulário devolvem o rótulo visível em vez do código.
     const modoAbatimento = normalizarTexto(payload.ModoAbatimentoTitulo);
     payload.ModoAbatimentoTitulo =
       modoAbatimento === 'v' || modoAbatimento.includes('valor') ? 'V' : 'Q';
@@ -946,7 +946,7 @@
     );
 
     if (!formulario) {
-      throw new Error('A resposta de ediÃ§Ã£o nÃ£o contÃ©m o formulÃ¡rio esperado.');
+      throw new Error('A resposta de edição não contém o formulário esperado.');
     }
 
     const payload = converterFormularioEmObjeto(formulario);
@@ -956,7 +956,7 @@
     );
 
     if (ausentes.length) {
-      throw new Error(`Campos ausentes no formulÃ¡rio: ${ausentes.join(', ')}.`);
+      throw new Error(`Campos ausentes no formulário: ${ausentes.join(', ')}.`);
     }
 
     return payload;
@@ -969,10 +969,10 @@
     const valorTotalBase = quantidade * valorUnitarioBase;
 
     if (!Number.isFinite(quantidade) || quantidade <= 0) {
-      throw new Error('Quantidade invÃ¡lida no formulÃ¡rio carregado.');
+      throw new Error('Quantidade inválida no formulário carregado.');
     }
     if (!Number.isFinite(valorUnitarioBase) || valorUnitarioBase <= 0) {
-      throw new Error('Valor unitÃ¡rio interno invÃ¡lido no formulÃ¡rio carregado.');
+      throw new Error('Valor unitário interno inválido no formulário carregado.');
     }
 
     const percentual = calcularPercentual(
@@ -984,7 +984,7 @@
     );
 
     if (!Number.isFinite(percentual)) {
-      throw new Error('O percentual calculado para o teste em segundo plano Ã© invÃ¡lido.');
+      throw new Error('O percentual calculado para o teste em segundo plano é inválido.');
     }
 
     const percentualArredondado = Number(percentual.toFixed(4));
@@ -993,7 +993,7 @@
 
     payload.PossuiAcrescimoDescontoInterno = 'True';
     payload.TipoAlteracaoValorUnitario = '2';
-    // Garantia extra: o servidor deve receber nÃºmeros, nunca textos como "100,0000".
+    // Garantia extra: o servidor deve receber números, nunca textos como "100,0000".
     payload.Quantidade = quantidade;
     payload.ValorUnitarioInterno = valorUnitarioBase;
     payload.AcrescimoDescontoInterno = percentualArredondado;
@@ -1028,7 +1028,7 @@
     try {
       resultado = await resposta.json();
     } catch (_) {
-      throw new Error(`O salvamento retornou uma resposta invÃ¡lida (HTTP ${resposta.status}).`);
+      throw new Error(`O salvamento retornou uma resposta inválida (HTTP ${resposta.status}).`);
     }
 
     const mensagens = Array.isArray(resultado?.Messages)
@@ -1061,7 +1061,7 @@
     const botao = document.getElementById(BTN_TESTE_BG_ID);
     if (botao) {
       botao.disabled = true;
-      botao.textContent = 'APIâ€¦';
+      botao.textContent = 'API…';
     }
 
     let salvos = 0;
@@ -1106,17 +1106,17 @@
 
       if (erros.length) {
         const resumo = [
-          'Lote concluÃ­do com ocorrÃªncias.', '',
+          'Lote concluído com ocorrências.', '',
           `${salvos} de ${selecao.itens.length} item(ns) salvo(s).`,
           gradeAtualizada
             ? 'A grade foi atualizada e a proposta permaneceu aberta.'
-            : 'A proposta permaneceu aberta. Use o botÃ£o circular da grade para atualizar.'
+            : 'A proposta permaneceu aberta. Use o botão circular da grade para atualizar.'
         ];
-        resumo.push('', `${erros.length} ocorrÃªncia(s):`, ...erros.slice(0, 12));
+        resumo.push('', `${erros.length} ocorrência(s):`, ...erros.slice(0, 12));
         if (erros.length > 12) resumo.push(`... e mais ${erros.length - 12}.`);
         alert(resumo.join('\n'));
       } else {
-        statusFinal = `âœ“ ${salvos}/${selecao.itens.length}`;
+        statusFinal = `✓ ${salvos}/${selecao.itens.length}`;
       }
     } catch (erro) {
       console.error('[TM Setup BG] Falha geral no lote:', erro);
@@ -1161,7 +1161,7 @@
       const linha = await esperarCondicao(() => localizarLinhaDoItem(item), 8000);
       if (!linha) {
         if (tentativa === 3) {
-          throw new Error(`NÃ£o encontrei a linha ${item.numero || item.codigo}.`);
+          throw new Error(`Não encontrei a linha ${item.numero || item.codigo}.`);
         }
         await wait(700);
         continue;
@@ -1170,7 +1170,7 @@
       const editar = encontrarControleEditar(linha);
       if (!editar || !editar.isConnected) {
         if (tentativa === 3) {
-          throw new Error(`NÃ£o encontrei o lÃ¡pis do item ${item.numero || item.codigo}.`);
+          throw new Error(`Não encontrei o lápis do item ${item.numero || item.codigo}.`);
         }
         await wait(700);
         continue;
@@ -1190,27 +1190,27 @@
         return;
       }
 
-      console.warn('[TM Setup] Janela nÃ£o abriu; repetindo clique:', {
+      console.warn('[TM Setup] Janela não abriu; repetindo clique:', {
         item,
         tentativa
       });
       await wait(800);
     }
 
-    throw new Error(`A janela do item ${item.numero || item.codigo} nÃ£o abriu apÃ³s 3 tentativas.`);
+    throw new Error(`A janela do item ${item.numero || item.codigo} não abriu após 3 tentativas.`);
   }
 
   async function salvarEFecharItem(item) {
     const quantidadeAntes = getInput('Quantidade__');
     const salvar = encontrarControlePorTexto(encontrarRaizModalDoItem(), 'salvar e fechar');
-    if (!salvar) throw new Error('NÃ£o encontrei o botÃ£o Salvar e fechar.');
+    if (!salvar) throw new Error('Não encontrei o botão Salvar e fechar.');
     salvar.click();
 
     const fechou = await esperarCondicao(
       () => !quantidadeAntes?.isConnected || !elementoVisivel(quantidadeAntes), 18000
     );
     if (!fechou) {
-      throw new Error(`O Maxiprod nÃ£o fechou o item ${item.numero || item.codigo}.`);
+      throw new Error(`O Maxiprod não fechou o item ${item.numero || item.codigo}.`);
     }
     await esperarCondicao(() => localizarLinhaDoItem(item), 8000);
     await wait(650);
@@ -1252,10 +1252,10 @@
   }
 
   function mensagemDoCadastro(codigo, cadastro) {
-    if (cadastro?.erro) return `Item ${codigo}: erro na API â€” ${cadastro.erro}`;
-    if (!cadastro?.encontrado) return `Item ${codigo}: nÃ£o encontrado pela API.`;
+    if (cadastro?.erro) return `Item ${codigo}: erro na API — ${cadastro.erro}`;
+    if (!cadastro?.encontrado) return `Item ${codigo}: não encontrado pela API.`;
     if (cadastro.percentual === null) {
-      return `Item ${codigo}: nÃ£o contÃ©m [setup: percentual] nas ObservaÃ§Ãµes tÃ©cnicas.`;
+      return `Item ${codigo}: não contém [setup: percentual] nas Observações técnicas.`;
     }
     return '';
   }
@@ -1263,7 +1263,7 @@
   async function calcularEInserirIndividual() {
     try {
       const codigo = normalizarCodigo(encontrarInputCodigoItem()?.value);
-      if (!codigo) return alert('NÃ£o encontrei o CÃ³digo do item aberto.');
+      if (!codigo) return alert('Não encontrei o Código do item aberto.');
       const setup = escolherSetup();
       if (!setup) return;
       const cadastro = (await consultarSetups([codigo])).get(codigo);
@@ -1282,7 +1282,7 @@
     const selecao = obterItensSelecionados();
     if (selecao.erro) return alert(selecao.erro);
     if (!selecao.itens.length) {
-      return alert('Nenhum item foi selecionado na grade Produtos/serviÃ§os.');
+      return alert('Nenhum item foi selecionado na grade Produtos/serviços.');
     }
     const setup = escolherSetup();
     if (!setup) return;
@@ -1292,7 +1292,7 @@
     const erros = [];
 
     try {
-      atualizarBotaoLote('APIâ€¦', true);
+      atualizarBotaoLote('API…', true);
       const mapa = await consultarSetups(selecao.itens.map(item => item.codigo));
 
       for (let indice = 0; indice < selecao.itens.length; indice++) {
@@ -1316,18 +1316,18 @@
           erros.push(`Item ${item.numero || item.codigo}: ${erroItem.message || erroItem}`);
           const recuperou = await fecharItemComErro();
           if (!recuperou && getInput('Quantidade__')) {
-            erros.push('NÃ£o foi possÃ­vel fechar a janela com erro; o lote foi interrompido.');
+            erros.push('Não foi possível fechar a janela com erro; o lote foi interrompido.');
             break;
           }
         }
       }
 
       const resumo = [
-        'Processamento concluÃ­do.', '',
+        'Processamento concluído.', '',
         `${salvos} de ${selecao.itens.length} item(ns) salvo(s).`
       ];
       if (erros.length) {
-        resumo.push('', `${erros.length} ocorrÃªncia(s):`, ...erros.slice(0, 12));
+        resumo.push('', `${erros.length} ocorrência(s):`, ...erros.slice(0, 12));
         if (erros.length > 12) resumo.push(`... e mais ${erros.length - 12}.`);
       }
       alert(resumo.join('\n'));
@@ -1372,7 +1372,7 @@
     });
     GM_registerMenuCommand('Apagar token da API Maxiprod', () => {
       GM_deleteValue(TOKEN_KEY);
-      alert('Token apagado. O script solicitarÃ¡ um novo na prÃ³xima execuÃ§Ã£o.');
+      alert('Token apagado. O script solicitará um novo na próxima execução.');
     });
     criarBotoes();
   }
