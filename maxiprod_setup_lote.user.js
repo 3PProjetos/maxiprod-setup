@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         Maxiprod - ICMS e Setup automático em lote (API)
 // @namespace    http://tampermonkey.net/
-// @version      4.4
+// @version      4.5
 // @description  Consulta o Setup pela API GraphQL e aplica/salva automaticamente os itens selecionados
-// @updateURL    https://raw.githubusercontent.com/3PProjetos/maxiprod-setup/main/maxiprod_setup_lote.user.js
-// @downloadURL  https://raw.githubusercontent.com/3PProjetos/maxiprod-setup/main/maxiprod_setup_lote.user.js
+// @updateURL    https://cdn.jsdelivr.net/gh/3PProjetos/maxiprod-setup@main/maxiprod_setup_lote.user.js
+// @downloadURL  https://cdn.jsdelivr.net/gh/3PProjetos/maxiprod-setup@main/maxiprod_setup_lote.user.js
 // @match        https://sistema.maxiprod.com.br/*
 // @connect      api.maxiprod.com.br
 // @grant        GM_xmlhttpRequest
