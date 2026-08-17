@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Maxiprod - ICMS e Setup automático em lote (API)
 // @namespace    http://tampermonkey.net/
-// @version      4.5
+// @version      4.6
 // @description  Consulta o Setup pela API GraphQL e aplica/salva automaticamente os itens selecionados
 // @updateURL    https://cdn.jsdelivr.net/gh/3PProjetos/maxiprod-setup@main/maxiprod_setup_lote.user.js
 // @downloadURL  https://cdn.jsdelivr.net/gh/3PProjetos/maxiprod-setup@main/maxiprod_setup_lote.user.js
@@ -1130,15 +1130,18 @@
         if (statusFinal) {
           botao.textContent = statusFinal;
           botao.style.background = '#238636';
+          botao.style.color = '#fff';
           setTimeout(() => {
             if (!loteEmExecucao && botao.isConnected) {
               botao.textContent = 'Setup';
-              botao.style.background = '#7a3db8';
+              botao.style.background = '#f2c94c';
+              botao.style.color = '#1f2937';
             }
           }, 4000);
         } else {
           botao.textContent = 'Setup';
-          botao.style.background = '#7a3db8';
+          botao.style.background = '#f2c94c';
+          botao.style.color = '#1f2937';
         }
       }
     }
@@ -1359,7 +1362,8 @@
       testeBg.type = 'button';
       testeBg.title = 'Aplicar Setup nos itens selecionados';
       testeBg.textContent = 'Setup';
-      aplicarEstiloBotao(testeBg, '20px', '#7a3db8');
+      aplicarEstiloBotao(testeBg, '20px', '#f2c94c');
+      testeBg.style.color = '#1f2937';
       testeBg.addEventListener('click', processarLoteEmSegundoPlano);
       document.body.appendChild(testeBg);
     }
